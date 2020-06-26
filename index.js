@@ -161,13 +161,9 @@ const puppeteer = require('puppeteer');
 
 
         // const pathToExtension = require('path').join(__dirname, 'my-extension');
-        const browser = await puppeteer.launch({
+      const browser = await puppeteer.launch({
         userDataDir: './user-data',
-        headless: false,
-        args: [
-          //`--disable-extensions-except=${pathToExtension}`,
-          //`--load-extension=${pathToExtension}`
-        ]
+        headless: false
       });
   
       const page = await browser.newPage();
@@ -184,8 +180,7 @@ const puppeteer = require('puppeteer');
       const windowHandle = await page.evaluateHandle(() => window);
 
 
-
-        var socket = require('socket.io-client')('https://web.whatsapp.com');
+        var socket = require('socket.io-client')('wss://web.whatsapp.com/ws');
         socket.on('connect', function(){
             console.log("connect: conectow")
         });
@@ -199,9 +194,12 @@ const puppeteer = require('puppeteer');
         });
         
         socket.on('disconnect', function(){
-        
+            console.log("teste ws: desconectow")
         });
 
+        socket.on('*', function(){
+            console.log("teste ")
+        });
 
     } catch (err) {
         console.log("deu merda .... ", err.message)
