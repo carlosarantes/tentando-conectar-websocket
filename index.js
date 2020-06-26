@@ -4,28 +4,7 @@ const puppeteer = require('puppeteer');
 
 
 (async () => {
-    // const pathToExtension = require('path').join(__dirname, 'my-extension');
-    const browser = await puppeteer.launch({
-      userDataDir: './user-data',
-      headless: false,
-      args: [
-        //`--disable-extensions-except=${pathToExtension}`,
-        //`--load-extension=${pathToExtension}`
-      ]
-    });
 
-    const page = await browser.newPage();
-    await page.goto("http://web.whatsapp.com/", { waitUntil : "networkidle2" });
-
-    const urlWebSocket = browser.wsEndpoint();
-
-
-  //  page.workers()
-
-    // Test the background page as you would any other page.
-  //  await browser.close();
-//  webWorker.url()
-    const windowHandle = await page.evaluateHandle(() => window);
 
 
     // console.log("asElement- ", windowHandle.asElement())
@@ -33,7 +12,7 @@ const puppeteer = require('puppeteer');
     // windowHandle.evaluate(pageFunction[, ...args])
     // windowHandle.evaluateHandle(pageFunction[, ...args])
    // console.log(await (windowHandle.executionContext()).getProperties() )
-    console.log(await windowHandle.getProperties())
+   // console.log(await windowHandle.getProperties())
     // console.log(windowHandle.getProperty(propertyName))
    // console.log(await windowHandle.jsonValue())
     
@@ -175,21 +154,60 @@ const puppeteer = require('puppeteer');
 
 */
 
+// urlWebSocket
+
+
+    try {
+
+
+        // const pathToExtension = require('path').join(__dirname, 'my-extension');
+        const browser = await puppeteer.launch({
+        userDataDir: './user-data',
+        headless: false,
+        args: [
+          //`--disable-extensions-except=${pathToExtension}`,
+          //`--load-extension=${pathToExtension}`
+        ]
+      });
+  
+      const page = await browser.newPage();
+      await page.goto("http://web.whatsapp.com/", { waitUntil : "networkidle2" });
+  
+      const urlWebSocket = browser.wsEndpoint();
+  
+  
+    //  page.workers()
+  
+      // Test the background page as you would any other page.
+    //  await browser.close();
+  //  webWorker.url()
+      const windowHandle = await page.evaluateHandle(() => window);
 
 
 
-    var socket = require('socket.io-client')(urlWebSocket);
-    socket.on('connect', function(){
-        console.log("connect: conectow")
-    });
-    
-    socket.on('event', function(data){
-        console.log("evento: ", data);
-    });
-    
-    socket.on('disconnect', function(){
-    
-    });
+        var socket = require('socket.io-client')('https://web.whatsapp.com');
+        socket.on('connect', function(){
+            console.log("connect: conectow")
+        });
+
+        socket.on('ws', function(){
+            console.log("teste ws: conectow")
+        });
+
+        socket.on('event', function(data){
+            console.log("evento: ", data);
+        });
+        
+        socket.on('disconnect', function(){
+        
+        });
+
+
+    } catch (err) {
+        console.log("deu merda .... ", err.message)
+    }
+
+
 
 
 
