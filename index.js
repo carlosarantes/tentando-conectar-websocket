@@ -3,6 +3,7 @@
 const puppeteer = require('puppeteer');
 
 
+
 (async () => {
 
 
@@ -18,8 +19,6 @@ const puppeteer = require('puppeteer');
     
 
 /*
-
-
  'onmouseup' => [JSHandle],
   'onmousewheel' => [JSHandle],
   'onpause' => [JSHandle],
@@ -151,7 +150,6 @@ const puppeteer = require('puppeteer');
   'Debug' => [JSHandle],
   'l10n' => [JSHandle],
   'regeneratorRuntime' => [JSHandle]
-
 */
 
 // urlWebSocket
@@ -177,12 +175,20 @@ const puppeteer = require('puppeteer');
       // Test the background page as you would any other page.
     //  await browser.close();
   //  webWorker.url()
-      const windowHandle = await page.evaluateHandle(() => window);
+     //   const windowHandle = await page.evaluateHandle(() => window);
 
 
         var socket = require('socket.io-client')('wss://web.whatsapp.com/ws');
         socket.on('connect', function(){
             console.log("connect: conectow")
+        });
+
+        socket.on('event', function(){
+          console.log("teste ws: conectow")
+        });
+
+        socket.on('', function(){
+          console.log("teste ws: conectow")
         });
 
         socket.on('ws', function(){
@@ -200,6 +206,47 @@ const puppeteer = require('puppeteer');
         socket.on('*', function(){
             console.log("teste ")
         });
+
+
+        await new Promise(resolve => setTimeout(resolve, 20000) );
+
+        page.exposeFunction('puppeteerMutationListener', puppeteerMutationListener);
+
+        await page.evaluate(() => {
+            const observer = new MutationObserver( (mutationsList) => {
+                for (const mutation of mutationsList) {
+                  window.puppeteerMutationListener(
+              
+                  );
+                }
+              }
+            )
+
+            const config = {
+              attributes: true,
+              childList: true,
+              characterData: true,
+              subtree: true
+            }
+
+            var target = document.getElementById("pane-side");
+      
+            if (target) {
+              observer.observe(document.getElementById("pane-side"), config);
+            }
+            
+       });
+       
+       
+       page.on('console', async (msg) => {
+          if (msg.text === '__mutation') {
+            // do something...
+          }
+       }); 
+
+      function puppeteerMutationListener() {
+        console.log(`MUDOOOOOU, VAMOS VERIFICAR MUDANÇA`);
+      }
 
     } catch (err) {
         console.log("deu merda .... ", err.message)
@@ -222,3 +269,43 @@ const puppeteer = require('puppeteer');
 
 
 
+
+
+
+
+/*
+(async function main() {
+  try {
+    const browser = await puppeteer.launch({ headless: false });
+    const [page] = await browser.pages();
+
+    await page.setBypassCSP(true);
+    await page.goto('about:blank');
+  
+
+    page.exposeFunction('puppeteerMutationListener', puppeteerMutationListener);
+
+    await page.evaluate(() => {
+      const target = document.querySelector('.ss1');
+      const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          window.puppeteerMutationListener(
+            mutation.removedNodes[0].textContent,
+            mutation.addedNodes[0].textContent,
+          );
+        }
+      });
+      observer.observe(
+        target[0],
+        { childList: true },
+      );
+    });
+  } catch (err) {
+    console.error(err);
+  }
+})();
+
+function puppeteerMutationListener(oldValue, newValue) {
+  console.log(`${oldValue} -> ${newValue}`);
+}
+*/
